@@ -1,0 +1,18 @@
+<p>
+	short url: <b> <%= short_url %> </b> <span>[<a href='<%= short_url %>'>link</a>]</span>
+	<br>
+	<a href="/">shorten another?</a>
+</p>
+<p>
+	<br>
+	short url length: <%= short_url.length %> characters 
+	<br> 
+	original url length: <%= url.length %> characters
+	<% if url.length - short_url.length <= 0 %>
+		<br>
+		You save nothing! You lose! Good day,sir!
+	<% else %>
+		<br>
+		saving <%= url.length - short_url.length %> characters
+	<% end %>
+</p>

@@ -1,0 +1,28 @@
+body {
+	font-family: sans-serif;
+	font-size: 1.6em;
+}
+
+input {
+	max-width: 100%;
+	font-size: 1.6em;
+}
+
+button {
+	font-size: 1.6em;
+	background: white;
+	border: 1px solid #32A5DB;
+	margin-top: 5px;
+}
+
+button:hover {
+	background: #32A5DB;
+}
+
+a:link {
+	color: #32A5DB;
+}
+
+a:visited {
+	color: #32A5DB;
+}
