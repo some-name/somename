@@ -21,7 +21,8 @@ get '/:short' do |id|
 		<br> <a href='/'>go home?</a>"
 	end
 	url = db.exec("SELECT * FROM urls WHERE id = $1;", [id])
-	redirect url[0]['url'], "MAGIC"
+	url = url[0]['url'].start_with?("http") ? url[0]['url'] : "http://" << url[0]['url']
+	redirect url, "MAGIC"
 end
 
 get '/add?/?' do
@@ -31,6 +32,9 @@ end
 post '/add/' do
 	#add url
 	url = params[:url]#make sure the url isn't pointing at somena.me
+	if url =~ /somena\.me/i
+		return erb :add, :locals => { :url => "http://somena.me", :short_url => "http://somna.me" }
+	end
 	id = db.exec("select exists(select * from urls where url = $1);", [url])
 	if id[0]["exists"] == "t"
 		id = db.exec("select id from urls where url = $1;", [url])
