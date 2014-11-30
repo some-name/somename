@@ -38,6 +38,6 @@ post '/add/' do
 		id = db.exec("insert into urls (url) values ($1) returning id;", [url])
 	end
 	id = id[0]["id"].to_i.to_s(36)
-	short_url = "http://localhost:4567/#{id}"
+	short_url = "http://somena.me/#{id}"
 	erb :add, :locals => { :url => url, :short_url => short_url }
 end
