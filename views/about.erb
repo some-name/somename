@@ -1,9 +1,12 @@
 <p>
 	short url: <b> <%= short_url %> </b> <span>[<a href='<%= short_url %>'>link</a>]</span>
 	<br>
+	original url: <a href='<%= url %>'><%= url %></a>
+	<br>
 	<a href="/">shorten another?</a>
 </p>
 <p>
+	stats:
 	<br>
 	short url length: <%= short_url.length %> characters 
 	<br> 
@@ -15,4 +18,6 @@
 		<br>
 		saving <%= url.length - short_url.length %> characters
 	<% end %>
+	<br>
+	views: <%= views %>
 </p>

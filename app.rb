@@ -4,7 +4,8 @@ require 'pg'
 db = PGconn.connect("localhost", "5432", "", "", "somename")
 db.exec("CREATE TABLE IF NOT EXISTS urls (
 	id  BIGSERIAL PRIMARY KEY,
-	url TEXT UNIQUE
+	url TEXT UNIQUE,
+	views BIGINT
 );")
 
 get '/' do
@@ -15,13 +16,14 @@ end
 get '/:short' do |id|
 	#look up short url id and redirect to full url
 	id = id.to_i(36)
-	url = db.exec("select exists(select * from urls where id = $1);", [id])
-	if url[0]["exists"] == "f"
+	query = db.exec("select exists(select * from urls where id = $1);", [id])
+	if query[0]["exists"] == "f"
 		return "something funky is going on here...
 		<br> <a href='/'>go home?</a>"
 	end
-	url = db.exec("SELECT * FROM urls WHERE id = $1;", [id])
-	url = url[0]['url'].start_with?("http") ? url[0]['url'] : "http://" << url[0]['url']
+	query = db.exec("SELECT * FROM urls WHERE id = $1;", [id])
+	db.exec("UPDATE urls SET views = views + 1 WHERE id = $1;", [id])
+	url = query[0]['url'].start_with?("http") ? query[0]['url'] : "http://" << query[0]['url']
 	redirect url, "MAGIC"
 end
 
@@ -39,9 +41,29 @@ post '/add/' do
 	if id[0]["exists"] == "t"
 		id = db.exec("select id from urls where url = $1;", [url])
 	else
-		id = db.exec("insert into urls (url) values ($1) returning id;", [url])
+		id = db.exec("insert into urls (url, views) values ($1, 0) returning id;", [url])
 	end
 	id = id[0]["id"].to_i.to_s(36)
-	short_url = "http://somena.me/#{id}"
-	erb :add, :locals => { :url => url, :short_url => short_url }
+	redirect "/about/#{id}"
 end
+
+get '/about/:short' do |id|
+	id = id.to_i(36)
+	query = db.exec("select exists(select * from urls where id = $1);", [id])
+	if query[0]["exists"] == "f"
+		return "something funky is going on here...
+		<br> <a href='/'>go home?</a>"
+	end
+	query = db.exec("SELECT * FROM urls WHERE id = $1;", [id])
+	short_url = "http://somena.me/#{query[0]['id'].to_i.to_s(36)}"
+	views = query[0]['views']
+	url = query[0]['url'].start_with?("http") ? query[0]['url'] : "http://" << query[0]['url']
+	erb :about, :locals => { :url => url, :short_url => short_url, :views => views }
+end
+
+
+
+
+
+
+
